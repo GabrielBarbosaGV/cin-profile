@@ -2,7 +2,7 @@
     import Picture from '../../../assets/3x4.jpg';
     import TopBar from './TopBar.svelte';
     import { scrolling } from './ScrollAction';
-    import { crossfade } from 'svelte/transition';
+    import { fade, crossfade } from 'svelte/transition';
     import { cubicOut } from 'svelte/easing';
     
     export let scrollYCond = (n: number) => n > 0;
@@ -39,11 +39,22 @@
     };
 
     export let topBarProps = {
-        height: '200px'
+        height: '180px'
     };
 
     export let bigBalloonHeight = '500px';
-    export let smallBalloonHeight = '100px';
+
+    interface SmallBalloonProps {
+        height: string,
+        left: string,
+        top: string
+    }
+
+    export let smallBalloonProps: SmallBalloonProps = {
+        height: '160px',
+        left: '30px',
+        top: '80px'
+    };
 
     export let crossfadeKey = { key: 0 };
 
@@ -58,8 +69,9 @@
 
     export let transitionDuration = 200;
     export let easing = cubicOut;
+    export let distDurationFunc = (d: number) => d * 3;
     let [send, receive] = crossfade({
-        duration: d => d,
+        duration: distDurationFunc,
         fallback: () => {
             return {
                 duration: transitionDuration,
@@ -110,6 +122,10 @@
     .absolute-position {
         position: absolute;
     }
+
+    .invisible-occupies-space {
+        visibility: hidden;
+    }
 </style>
 
 <svelte:window bind:innerHeight={height} bind:innerWidth={width} />
@@ -118,6 +134,7 @@
     use:scrolling="{scrollYCond}"
     on:hit="{setUserNotAtTop}"
     on:unhit="{setUserAtTop}"
+    style="margin-top: 0px;margin-left: 0px;margin-right: 0px;"
     {...rootDivProps}
 >
     {#if userAtTop}
@@ -133,18 +150,24 @@
         </div>
     {/if}
 
-    <TopBar {...topBarProps}>
-        {#if !userAtTop}
-            <img
-                src="{Picture}"
-                alt="My face again"
-                class="completely-round image top-bar absolute-position"
-                style="height: {smallBalloonHeight}"
-                out:send="{crossfadeKey}"
-                in:receive="{crossfadeKey}"
-            >
-        {/if}
-    </TopBar>
+    {#if !userAtTop}
+        <div
+            class="fill-parent flex flex-center"
+            class:invisible-occupies-space="{userAtTop}"
+            transition:fade
+        >
+            <TopBar {...topBarProps}>
+                <img
+                    src="{Picture}"
+                    alt="My face again"
+                    class="completely-round image top-bar absolute-position"
+                    style="height: {smallBalloonProps.height};left: {smallBalloonProps.left};top: {smallBalloonProps.top};"
+                    out:send="{crossfadeKey}"
+                    in:receive="{crossfadeKey}"
+                >
+            </TopBar>
+        </div>
+    {/if}
 
     <div style="height: 10000px;"></div>
 </div>
