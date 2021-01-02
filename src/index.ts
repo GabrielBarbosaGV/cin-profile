@@ -1,5 +1,5 @@
-import Start from './start.svelte';
+import App from './App.svelte';
 
-const start = new Start({
+const app = new App({
     target: document.body
 });
