@@ -58,7 +58,7 @@
 
     export let crossfadeKey = { key: 0 };
 
-    let userAtTop = true;
+    export let userAtTop = true;
 
     let setUserNotAtTop = () => userAtTop = false;
     let setUserAtTop = () => userAtTop = true;
@@ -168,6 +168,4 @@
             </TopBar>
         </div>
     {/if}
-
-    <div style="height: 10000px;"></div>
 </div>
